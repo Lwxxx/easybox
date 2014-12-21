@@ -1,3 +1,9 @@
 #+TITLE: Utils list of easybox
 #+STARTUP: showall hidestars
 
+* dev-utils
+
+  | Name           | Requirements | Description             |
+  |----------------+--------------+-------------------------|
+  | cscope-indexer | None         | C version cscope-indxer |
+
