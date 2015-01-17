@@ -7,3 +7,9 @@
   |----------------+--------------+-------------------------|
   | cscope-indexer | None         | C version cscope-indxer |
 
+* doc-utils
+
+  | Name   | Requirements | Description             |
+  |--------+--------------+-------------------------|
+  | org2md | Python       | Convert org to markdown |
+
