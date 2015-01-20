@@ -11,5 +11,11 @@
 
   | Name   | Requirements | Description             |
   |--------+--------------+-------------------------|
-  | org2md | Python       | Convert org to markdown |
+  | org2md | Python 2.x   | Convert org to markdown |
+
+* life
+
+  | Name   | Requirements | Description              |
+  |--------+--------------+--------------------------|
+  | send2k | Python 2.x   | Send documents to kindle |
 
