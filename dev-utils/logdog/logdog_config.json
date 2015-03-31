@@ -1,0 +1,17 @@
+{
+	"logdog" : [
+		{
+			"file" : "./test.log",
+			"actions" : [
+				{
+					"match" : "^ha.*?",
+					"do": "echo haha >> ./hello.txt"
+				},
+				{
+					"match" : ".*hi$",
+					"do": "echo hi >> ./hello.txt"
+				}
+			]
+		}
+	]
+}
