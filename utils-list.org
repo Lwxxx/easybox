@@ -3,9 +3,11 @@
 
 * dev-utils
 
-  | Name           | Requirements | Description             |
-  |----------------+--------------+-------------------------|
-  | cscope-indexer | None         | C version cscope-indxer |
+  | Name           | Requirements | Description                     |
+  |----------------+--------------+---------------------------------|
+  | cscope-indexer | None         | C version cscope-indxer         |
+  | logdog         | json-c, pcre | watch log files and do sth      |
+  | ddd            | None         | some usefull daemon collections |
 
 * doc-utils
 
