@@ -3,7 +3,7 @@ INCLUDE_PATH = -I./component -I./core -I./common -I../../../base/include
 
 CFLAGS += $(INCLUDE_PATH)
 LDLIBS += -lpthread
-OBJS += ddd.o ddd_socket.o portmap.o command.o file.o log.o monitor.o
+OBJS += ddd.o ddd_socket.o portmap.o command.o tftp.o log.o monitor.o
 
 ddd: $(OBJS)
 	$(CC) $^ -o $@ $(LDLIBS)

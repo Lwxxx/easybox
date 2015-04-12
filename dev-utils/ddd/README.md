@@ -2,7 +2,12 @@ ddd
 ===
 
 portmap
+
 command
-file
+
+tftp:
+not support options
+
 log
+
 monitor
