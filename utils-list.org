@@ -9,6 +9,7 @@
   | logdog         | json-c, pcre | watch log files and do sth      |
   | ddd            | None         | some usefull daemon collections |
   | z              | None         | change directory by alias       |
+  | ring           | None         | use a file as ring buffer       |
 
 * doc-utils
 
