@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "eb_global.h"
 #include "ddd_socket.h"
 #include "component.h"

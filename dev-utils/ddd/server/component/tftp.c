@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <inttypes.h>
+#include <signal.h>
 
 #include "eb_global.h"
 #include "ddd_socket.h"
