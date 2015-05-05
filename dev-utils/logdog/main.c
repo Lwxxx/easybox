@@ -15,6 +15,8 @@
 #define DFT_CONFIG_FILE "logdog_config.json"
 #define DFT_LOG_FILE    "logdog.log"
 
+GLOBAL FILE* dog_log_file = NULL;
+
 IMPORT struct logdog_config ldg_cfg;
 
 LOCAL void show_usage(void)
@@ -40,6 +42,7 @@ LOCAL void* run_dog(void *arg)
 	if (NULL == arg)
 	{
 		LDG_ERR("invalid logdog entry!\n");
+		return NULL;
 	}
 	else
 	{
@@ -121,12 +124,22 @@ int main(int argc, char *argv[])
 		//+TODO run as daemon
 	}
 
+	// open log file
+	dog_log_file = fopen(log_file, "w");
+	if (NULL == dog_log_file)
+	{
+		perror("open log file failed!\n");
+		return -1;
+	}
+
 	// load config json
+	LDG_LOG("load config file\n");
 	logdog_load_config(config_file);
 
 	// create n dog threads
 	dog_count = ldg_cfg.count;
 	thread_id = (pthread_t*)malloc(dog_count * sizeof(pthread_t));
+	LDG_LOG("create %d dogs\n", dog_count);
 	if (NULL == thread_id)
 	{
 		LDG_ERR("allocate memory for thread failed: %s\n", strerror(errno));
@@ -152,6 +165,7 @@ int main(int argc, char *argv[])
 
 out:
 	logdog_destory_config();
+	if (NULL != dog_log_file) fclose(dog_log_file);
 	if (NULL != thread_id) free(thread_id);
 
 	return 0;
