@@ -81,7 +81,6 @@ LOCAL void send_tftp_ack(uint16_t number)
 	memcpy(buf, &opcode, 2);
 	memcpy(buf+2, &block_no, 2);
 
-	printf("[tftp] send ack\n");
 	sendto(tftp_sock, buf, 4, 0, (struct sockaddr *)&addr, addr_len);
 }
 
@@ -100,7 +99,6 @@ LOCAL void send_tftp_data()
 	memcpy(buf+2, &block_no, 2);
 	memcpy(buf+4, read_buf, TFTP_DATA_BUF);
 
-	printf("[tftp] send data\n");
 	sendto(tftp_sock, buf, read_data_len + 4, 0, (struct sockaddr *)&addr, addr_len);
 }
 
@@ -332,11 +330,11 @@ LOCAL void handle_tftp_packet(char* buf, int len)
 		handle_tftp_wrq(buf);
 		break;
 	case TFTP_OP_DATA:
-		printf("[tftp] DATA\n");
+		// printf("[tftp] DATA\n");
 		handle_tftp_data(buf, len);
 		break;
 	case TFTP_OP_ACK:
-		printf("[tftp] ACK\n");
+		// printf("[tftp] ACK\n");
 		handle_tftp_ack(buf);
 		break;
 	case TFTP_OP_ERROR:
