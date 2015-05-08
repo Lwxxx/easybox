@@ -5,3 +5,4 @@
 *.elc
 *.exe
 cscope.*
+.DS_Store
