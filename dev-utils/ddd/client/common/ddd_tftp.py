@@ -5,7 +5,6 @@ import socket
 import struct
 
 
-TFTP_PORT   = 69
 TFTP_OP_RRQ = 1
 TFTP_OP_WRQ = 2
 TFTP_OP_DAT = 3
@@ -48,8 +47,8 @@ class DTftp(object):
 
     ''' construct method
     '''
-    def __init__(self, ip_addr):
-        self.server_addr = (ip_addr, TFTP_PORT)
+    def __init__(self, ip_addr, port):
+        self.server_addr = (ip_addr, port)
         self.sock = None
         self.block_number = 0
         self.end_block = -1
@@ -236,7 +235,7 @@ class DTftp(object):
 # Test
 if __name__ == '__main__':
     # tftp xxx.xxx.xxx.xxx [put|get] xxxx
-    tftpc = DTftp('127.0.0.1')
+    tftpc = DTftp('127.0.0.1', 65437)
 
     # test get
     tftpc.get("test_get.dat")

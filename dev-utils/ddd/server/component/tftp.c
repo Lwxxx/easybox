@@ -45,7 +45,6 @@ LOCAL char errcode_str[][32] =
 };
 
 
-#define TFTP_PORT       69
 #define TFTP_DATA_BUF   512
 #define TFTP_TIMEOUT    2
 #define TFTP_RETRY_MAX  5
@@ -352,7 +351,7 @@ void* tftp_s(void* arg)
 	int  recv_len = 0;
 	socklen_t addr_len = (socklen_t)sizeof(addr);
 
-	tftp_sock = ddd_init_udp_socket(TFTP_NAME, TFTP_PORT, &addr);
+	tftp_sock = ddd_init_udp_socket(TFTP_NAME, DDD_PORT_ANY, &addr);
 	if (-1 == tftp_sock)
 	{
 		fprintf(stderr, "[tftp] init socket failed\n");
