@@ -5,8 +5,8 @@
 #include <errno.h>
 #include <inttypes.h>
 #include <signal.h>
+#include <limits.h>
 
-#include "eb_global.h"
 #include "ddd_socket.h"
 #include "component.h"
 
@@ -32,7 +32,7 @@ enum
 };
 
 
-LOCAL char errcode_str[][32] =
+static char errcode_str[][32] =
 {
 	"",
 	"file not found",
@@ -53,19 +53,19 @@ LOCAL char errcode_str[][32] =
 #define TFTP_OCTET_MODE "octet"
 #define TFTP_MAIL_MODE  "mail"
 
-LOCAL struct sockaddr_in addr;
-LOCAL int tftp_sock = -1;
-LOCAL socklen_t addr_len = (socklen_t)sizeof(addr);
-LOCAL FILE* write_fp = NULL;
-LOCAL FILE* read_fp  = NULL;
-LOCAL int curr_write_block = 0;
-LOCAL int curr_read_block  = 0;
-LOCAL char read_buf[TFTP_DATA_BUF] = {0};
-LOCAL int read_data_len = 0;
-LOCAL int retry_times = 0;
-LOCAL int send_file_end = 0;
+static struct sockaddr_in addr;
+static int tftp_sock = -1;
+static socklen_t addr_len = (socklen_t)sizeof(addr);
+static FILE* write_fp = NULL;
+static FILE* read_fp  = NULL;
+static int curr_write_block = 0;
+static int curr_read_block  = 0;
+static char read_buf[TFTP_DATA_BUF] = {0};
+static int read_data_len = 0;
+static int retry_times = 0;
+static int send_file_end = 0;
 
-LOCAL void send_tftp_ack(uint16_t number)
+static void send_tftp_ack(uint16_t number)
 {
 	char     buf[4]   = {0};
 	uint16_t opcode   = htons(TFTP_OP_ACK);
@@ -83,7 +83,7 @@ LOCAL void send_tftp_ack(uint16_t number)
 	sendto(tftp_sock, buf, 4, 0, (struct sockaddr *)&addr, addr_len);
 }
 
-LOCAL void send_tftp_data()
+static void send_tftp_data()
 {
 	char buf[TFTP_DATA_BUF + 4] = {0};
 	uint16_t opcode   = htons(3);
@@ -101,7 +101,7 @@ LOCAL void send_tftp_data()
 	sendto(tftp_sock, buf, read_data_len + 4, 0, (struct sockaddr *)&addr, addr_len);
 }
 
-LOCAL void tftp_retransmit()
+static void tftp_retransmit()
 {
 	if (retry_times >= TFTP_RETRY_MAX)
 	{
@@ -116,7 +116,7 @@ LOCAL void tftp_retransmit()
 	alarm(TFTP_TIMEOUT);
 }
 
-LOCAL void send_tftp_error(int err_code)
+static void send_tftp_error(int err_code)
 {
 	char* buf = NULL;
 	char* err_msg_str = NULL;
@@ -143,14 +143,14 @@ LOCAL void send_tftp_error(int err_code)
 	sendto(tftp_sock, buf, err_msg_len + 5, 0, (struct sockaddr *)&addr, addr_len);
 }
 
-LOCAL void handle_tftp_rrq(char* buf)
+static void handle_tftp_rrq(char* buf)
 {
-	char filename[EB_PATH_MAX] = {0};
+	char filename[PATH_MAX] = {0};
 	char mode[12] = {0};
 	int  filename_len = 0;
 
 	// get filename
-	strncpy(filename, buf+2, EB_PATH_MAX);
+	strncpy(filename, buf+2, PATH_MAX);
 	filename_len = strlen(filename);
 
 	// get mode
@@ -190,14 +190,14 @@ LOCAL void handle_tftp_rrq(char* buf)
 	alarm(TFTP_TIMEOUT);
 }
 
-LOCAL void handle_tftp_wrq(char* buf)
+static void handle_tftp_wrq(char* buf)
 {
-	char filename[EB_PATH_MAX] = {0};
+	char filename[PATH_MAX] = {0};
 	char mode[12] = {0};
 	int  filename_len = 0;
 
 	// get filename
-	strncpy(filename, buf+2, EB_PATH_MAX);
+	strncpy(filename, buf+2, PATH_MAX);
 	filename_len = strlen(filename);
 
 	// get mode
@@ -224,7 +224,7 @@ LOCAL void handle_tftp_wrq(char* buf)
 	send_tftp_ack(0);
 }
 
-LOCAL void handle_tftp_data(char* buf, int len)
+static void handle_tftp_data(char* buf, int len)
 {
 	uint16_t block_no;
 	char* data;
@@ -257,7 +257,7 @@ LOCAL void handle_tftp_data(char* buf, int len)
 	}
 }
 
-LOCAL void handle_tftp_ack(char* buf)
+static void handle_tftp_ack(char* buf)
 {
 	uint16_t opcode   = 0;
 	uint16_t block_no = 0;
@@ -301,12 +301,12 @@ LOCAL void handle_tftp_ack(char* buf)
 	}
 }
 
-LOCAL void handle_tftp_error(char* buf)
+static void handle_tftp_error(char* buf)
 {
 	fprintf(stderr, "%s", buf + 4);
 }
 
-LOCAL void handle_tftp_packet(char* buf, int len)
+static void handle_tftp_packet(char* buf, int len)
 {
 	uint16_t opcode  = 0;
 

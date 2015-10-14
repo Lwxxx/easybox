@@ -9,7 +9,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "eb_global.h"
 #include "component.h"
 
 #define DDD_PORT_ANY 0
@@ -21,7 +20,7 @@ extern "C"
 {
 #endif
 
-GLOBAL int ddd_init_udp_socket(char* name, int port, struct sockaddr_in* addr);
+int ddd_init_udp_socket(char* name, int port, struct sockaddr_in* addr);
 
 #ifdef __cplusplus
 }

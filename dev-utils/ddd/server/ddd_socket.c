@@ -3,7 +3,7 @@
 
 #include "ddd_socket.h"
 
-GLOBAL int ddd_init_udp_socket(char* name, int port, struct sockaddr_in* addr)
+int ddd_init_udp_socket(char* name, int port, struct sockaddr_in* addr)
 {
 	int ret  = 0;
 	int sock = -1;

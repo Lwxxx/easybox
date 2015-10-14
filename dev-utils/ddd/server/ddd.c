@@ -3,17 +3,16 @@
 #include <string.h>
 #include <pthread.h>
 
-#include "eb_global.h"
 #include "component.h"
 
-LOCAL struct component component_list[] =
+static struct component component_list[] =
 {
    #include "component.conf"
 };
 
-LOCAL int component_count = sizeof(component_list)/sizeof(struct component);
+static int component_count = sizeof(component_list)/sizeof(struct component);
 
-GLOBAL struct component* find_component_by_name(char* name)
+struct component* find_component_by_name(char* name)
 {
 	int i = 0;
 

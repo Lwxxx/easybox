@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <strings.h>
 
-#include "eb_global.h"
 #include "component_funcs.conf"
 
 #define COMPENENT_NAME_MAX 32

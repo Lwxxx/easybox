@@ -2,14 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "eb_global.h"
 #include "ddd_socket.h"
 #include "component.h"
 
 #define PORTMAP_PORT 36925
 #define PORTMAP_NAME "portmap"
 
-GLOBAL void* portmap_s(void* arg)
+void* portmap_s(void* arg)
 {
 	char buf[BUF_MAX] = {0};
 	char port_str[8]  = {0};

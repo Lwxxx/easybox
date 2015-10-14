@@ -3,13 +3,12 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "eb_global.h"
 #include "ddd_socket.h"
 #include "component.h"
 
 #define COMMAND_NAME "command"
 
-LOCAL void run_command(char* cmd, char* result)
+static void run_command(char* cmd, char* result)
 {
 	FILE* cmd_fp = NULL;
 	char  line_buf[BUF_MAX] = {0};
@@ -43,7 +42,7 @@ LOCAL void run_command(char* cmd, char* result)
 	pclose(cmd_fp);
 }
 
-GLOBAL void* command_s(void* arg)
+void* command_s(void* arg)
 {
 	char recv_buf[BUF_MAX] = {0};
 	char reply_buf[BUF_MAX] = {0};
