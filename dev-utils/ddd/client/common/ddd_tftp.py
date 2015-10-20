@@ -194,18 +194,19 @@ class DTftp(object):
 
     ''' get file from tftp server
     '''
-    def get(self, file_path):
+    def get(self, file_name, local_path):
+        base_name = file_name.split('/')[-1]
         self.block_number = 0
         try:
-            self.write_file = open(file_path, 'wb')
+            self.write_file = open("%s/%s" % (local_path, base_name), 'wb')
         except Exception, e:
-            print 'ERROR: create file %s failed, ' % (file_path), e
+            print 'ERROR: create file %s/%s failed, ' % (local_path, base_name), e
             return
 
         # only support binary mode (octet)
-        rrq_template = TFTP_FMT_RRQ % (len(file_path)+1, len(TFTP_MODE_OCTET)+1)
+        rrq_template = TFTP_FMT_RRQ % (len(file_name)+1, len(TFTP_MODE_OCTET)+1)
         rrq_packet = struct.pack(rrq_template, socket.htons(TFTP_OP_RRQ), \
-                                 file_path, TFTP_MODE_OCTET)
+                                 file_name, TFTP_MODE_OCTET)
         self._connect()
         self._send_packet(rrq_packet)
         while self._handle_packet():pass
@@ -214,18 +215,20 @@ class DTftp(object):
 
     ''' put file to tftp server
     '''
-    def put(self, file_path):
+    def put(self, file_name, remote_path):
+        base_name = file_name.split('/')[-1]
+        remote_file = "%s/%s" % (remote_path, base_name)
         self.block_number = 0
         self.end_block    = -1
         try:
-            self.read_file = open(file_path, 'rb')
+            self.read_file = open(file_name, 'rb')
         except Exception, e:
-            print 'ERROR: read file: %s failed, ' % (file_path), e
+            print 'ERROR: read file: %s failed, ' % (file_name), e
             return
 
-        wrq_template = TFTP_FMT_WRQ % (len(file_path)+1, len(TFTP_MODE_OCTET)+1)
+        wrq_template = TFTP_FMT_WRQ % (len(remote_file)+1, len(TFTP_MODE_OCTET)+1)
         wrq_packet = struct.pack(wrq_template, socket.htons(TFTP_OP_WRQ), \
-                                 file_path, TFTP_MODE_OCTET)
+                                 remote_file, TFTP_MODE_OCTET)
 
         self._connect()
         self._send_packet(wrq_packet)
@@ -238,7 +241,7 @@ if __name__ == '__main__':
     tftpc = DTftp('127.0.0.1', 65437)
 
     # test get
-    tftpc.get("test_get.dat")
+    tftpc.get("test_get.dat", ".")
 
     # test put
-    tftpc.put("test_put.dat")
+    tftpc.put("test_put.dat", ".")

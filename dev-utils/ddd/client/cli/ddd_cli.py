@@ -24,24 +24,24 @@ def ddd_run_command(ipaddr, command):
     print 'command return: \n\n', command_result, '\n'
 
 
-def ddd_get_file(ipaddr, filepath):
+def ddd_get_file(ipaddr, remote_name, local_path):
     tftp_port   = ddd_get_port(ipaddr, 'tftp')
     tftp_client = DTftp(ipaddr, tftp_port)
-    tftp_client.get(filepath)
+    tftp_client.get(remote_name, local_path)
 
 
-def ddd_put_file(ipaddr, filepath):
+def ddd_put_file(ipaddr, local_name, remote_path):
     tftp_port   = ddd_get_port(ipaddr, 'tftp')
     tftp_client = DTftp(ipaddr, tftp_port)
-    tftp_client.put(filepath)
+    tftp_client.put(local_name, remote_path)
 
 
 def show_usage():
-    usage = 'usage: ddc ip_addr <action> <arg>\n\n' \
-            'action list: \n\n'                     \
-            '  run "xxx" -- run a shell command\n'  \
-            '  get xxx   -- get file from server\n' \
-            '  put xxx   -- put file to server\n\n'
+    usage = 'usage: ddc ip_addr <action> <param>\n\n'                 \
+            'action list: \n\n'                                       \
+            '  run "xxx"                   -- run a shell command\n'  \
+            '  get REMOTE_FILE LOCAL_PATH  -- get file from server\n' \
+            '  put LOCAL_FILE REMOTE_PATH  -- put file to server\n\n'
 
     print usage
     sys.exit(1)
@@ -49,20 +49,26 @@ def show_usage():
 
 if __name__ == '__main__':
 
-    if len(sys.argv) != 4:
+    if len(sys.argv) < 4:
         show_usage()
 
     ipaddr = sys.argv[1]
     action = sys.argv[2]
-    arg    = sys.argv[3]
+    param  = sys.argv[3:]
 
     if action == 'run':
-        if '"' == arg[0] and '"' == argv[-1]:
-            arg = arg[1:-1]
-        ddd_run_command(ipaddr, arg)
+        cmd = param[0]
+        if '"' == cmd[0] and '"' == cmd[-1]:
+            cmd = cmd[1:-1]
+        ddd_run_command(ipaddr, cmd)
     elif action == 'put':
-        ddd_put_file(ipaddr, arg)
+        if (2 != len(param)):
+            show_usage()
+        ddd_put_file(ipaddr, param[0], param[1])
     elif action == 'get':
-        ddd_get_file(ipaddr, arg)
+        if (2 != len(param)):
+            show_usage()
+        ddd_get_file(ipaddr, param[0], param[1])
     else:
+        print 'Invalid action: %s' % (action)
         show_usage()
