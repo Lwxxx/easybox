@@ -7,6 +7,7 @@ sys.path.append('../common')
 from ddd_portmap import DPortmap
 from ddd_command import DCommand
 from ddd_tftp    import DTftp
+from ddd_monitor import DMonitor
 
 
 
@@ -36,6 +37,13 @@ def ddd_put_file(ipaddr, local_name, remote_path):
     tftp_client.put(local_name, remote_path)
 
 
+def ddd_run_monitor(ipaddr):
+    monitor_port = ddd_get_port(ipaddr, 'monitor')
+    monitor_client = DMonitor(ipaddr, monitor_port)
+    monitor_client.send_command('start')
+    monitor_client.recv_data()
+
+
 def show_usage():
     usage = 'usage: ddc ip_addr <action> <param>\n\n'                 \
             'action list: \n\n'                                       \
@@ -49,26 +57,27 @@ def show_usage():
 
 if __name__ == '__main__':
 
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 3:
         show_usage()
 
     ipaddr = sys.argv[1]
     action = sys.argv[2]
-    param  = sys.argv[3:]
 
     if action == 'run':
-        cmd = param[0]
+        cmd = sys.argv[3]
         if '"' == cmd[0] and '"' == cmd[-1]:
             cmd = cmd[1:-1]
         ddd_run_command(ipaddr, cmd)
     elif action == 'put':
-        if (2 != len(param)):
+        if (5 != len(sys.argv)):
             show_usage()
-        ddd_put_file(ipaddr, param[0], param[1])
+        ddd_put_file(ipaddr, sys.argv[3], sys.argv[4])
     elif action == 'get':
-        if (2 != len(param)):
+        if (5 != len(sys.argv)):
             show_usage()
-        ddd_get_file(ipaddr, param[0], param[1])
+        ddd_get_file(ipaddr, sys.argv[3], sys.argv[4])
+    elif action == 'monitor':
+        ddd_run_monitor(ipaddr)
     else:
         print 'Invalid action: %s' % (action)
         show_usage()

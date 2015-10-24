@@ -1,20 +1,22 @@
 cmake_minimum_required(VERSION 2.8.1)
 
-project(ddd)
+project(dds)
 
 set(SRC_LIST
   ddd.c
   ddd_socket.c
   component/command.c
   component/log.c
-  component/monitor.c
   component/portmap.c
   component/tftp.c
+  component/monitor.c
+  component/monitor/cpu.c
   )
 
 include_directories(.)
 include_directories(component)
+include_directories(component/monitor)
 
-add_executable(ddd ${SRC_LIST})
-target_link_libraries(ddd pthread)
-install(TARGETS ddd DESTINATION /usr/bin)
+add_executable(dds ${SRC_LIST})
+target_link_libraries(dds pthread)
+install(TARGETS dds DESTINATION /usr/bin)
