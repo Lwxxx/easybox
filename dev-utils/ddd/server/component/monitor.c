@@ -8,6 +8,7 @@
 #include "ddd_socket.h"
 #include "component.h"
 #include "cpu.h"
+#include "memory.h"
 
 #define MONITOR_NAME     "monitor"
 
@@ -32,6 +33,7 @@ void* collect_thread(void* arg)
 	char send_buf[BUF_MAX] = {0};
 	socklen_t addr_len = (socklen_t)sizeof(monitor_addr);
 	struct cpu_info_collection* cpu_data = get_cpu_data();
+	struct mem_info_collection* mem_data = get_mem_data();
 	time_t now;
 
 	pthread_detach(pthread_self());
@@ -46,12 +48,18 @@ void* collect_thread(void* arg)
 			/* cpu information */
 			collect_cpu_info();
 			memset(send_buf, 0, BUF_MAX);
-			sprintf(send_buf, "cpu$total$%lu$usage:%.2f\n", now,
+			sprintf(send_buf, "cpu$total$%llu$usage:%.2f\n", now,
 					cpu_data->total_info.usage);
 			sendto(monitor_sock, send_buf, strlen(send_buf), 0,
 				   (struct sockaddr*)&monitor_addr, addr_len);
 
 			/* memory info */
+			collect_memory_info();
+			memset(send_buf, 0, BUF_MAX);
+			sprintf(send_buf, "mem$mem$%llu$total:%llu,used:%llu\n", now,
+					mem_data->total, mem_data->used);
+			sendto(monitor_sock, send_buf, strlen(send_buf), 0,
+				   (struct sockaddr*)&monitor_addr, addr_len);
 		}
 
 		sleep(MONITOR_INTERVAL);

@@ -11,6 +11,7 @@ set(SRC_LIST
   component/tftp.c
   component/monitor.c
   component/monitor/cpu.c
+  component/monitor/memory.c
   )
 
 include_directories(.)
