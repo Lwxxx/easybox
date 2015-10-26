@@ -34,7 +34,7 @@ void* collect_thread(void* arg)
 	socklen_t addr_len = (socklen_t)sizeof(monitor_addr);
 	struct cpu_info_collection* cpu_data = get_cpu_data();
 	struct mem_info_collection* mem_data = get_mem_data();
-	time_t now;
+	uint64_t now;
 
 	pthread_detach(pthread_self());
 
@@ -43,7 +43,7 @@ void* collect_thread(void* arg)
 		if (running_flag)
 		{
 			/* record timestamp*/
-			now = time(NULL);
+			now = (uint64_t)time(NULL);
 
 			/* cpu information */
 			collect_cpu_info();
