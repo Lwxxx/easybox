@@ -3,20 +3,45 @@
 import socket
 import time
 
+
 class DMonitor(object):
+
+    cpu_usage = 0.0
+    mem_usage = 0.0
+    mem_total = 0
+    mem_used  = 0
 
     def __init__(self, dst_ip, dst_port):
         self.dst_ip = dst_ip
         self.dst_port = dst_port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+        
+    def get_cpu_usage(self):
+        return self.cpu_usage
+
+
+    def get_mem_usage(self):
+        return self.mem_usage
+
+
+    def get_mem_total(self):
+        return self.mem_total
+
+    
+    def get_mem_used(self):
+        return self.mem_used
+
+
     def send_command(self, command):
         self.sock.sendto(command, (self.dst_ip, self.dst_port))
+
 
     def recv_data(self):
         while True:
             data = self.sock.recv(1024)
             self._handle_data(data)
+
 
     def _handle_data(self, data):
         splited_data = data.split('$')
@@ -29,43 +54,22 @@ class DMonitor(object):
         info_data = splited_data[3][:-1] # remove '\n'
 
         if info_type == 'cpu':
-            self._show_cpu_info(info_name, timestamp, info_data)
+            self._handle_cpu_info(info_name, timestamp, info_data)
         elif info_type == 'mem':
-            self._show_mem_info(info_name, timestamp, info_data)
+            self._handle_mem_info(info_name, timestamp, info_data)
         else:
             pass
 
 
-    def _show_cpu_info(self, name, timestamp, data):
-        time_str = time.ctime(float(timestamp))
-        cpu_usage = data.split(':')[-1]
-        print '%s | CPU | %6s | %6s%%' % (time_str, name, cpu_usage)
+    def _handle_cpu_info(self, name, timestamp, data):
+        self.cpu_usage = float(data.split(':')[-1])
 
 
-    def _KB_to_pretty_str(self, data):
-        if data > 1024:
-            data = float(data) / 1024
-            if data > 1024:
-                data = float(data) / 1024
-                pretty_str = "%.2f GB" % (data)
-            else:
-                pretty_str = "%.2f MB" % (data)
-        else:
-            pretty_str = "%.2f KB" % (data)
-
-        return pretty_str
-
-
-    def _show_mem_info(self, name, timestamp, data):
-        time_str = time.ctime(float(timestamp))
+    def _handle_mem_info(self, name, timestamp, data):
         mem_data = data.split(',')
         if len(mem_data) >= 2:
-            mem_total = mem_data[0].split(':')[-1]
-            mem_used  = mem_data[1].split(':')[-1]
-            mem_total_str = self._KB_to_pretty_str(int(mem_total))
-            mem_used_str = self._KB_to_pretty_str(int(mem_used))
-            used_ratio = (float(mem_used) * 100) / float(mem_total)
-            print '%s | Mem |  usage | %s/%s [%.2f%%]' % \
-                  (time_str, mem_used_str, mem_total_str, used_ratio)
+            self.mem_total = int(mem_data[0].split(':')[-1]) * 1024
+            self.mem_used  = int(mem_data[1].split(':')[-1]) * 1024
+            self.mem_usage = (float(self.mem_used) * 100) / float(self.mem_total)
         else:
             print 'Invalid memory data!'
