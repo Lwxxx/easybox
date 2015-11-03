@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 
 import sys
+import thread
 from bottle import route, post, request, run, template, static_file
 
 sys.path.append('../common')
 from utils import *
 from ddd_portmap import DPortmap
 from ddd_command import DCommand
+from ddd_monitor import DMonitor
 
-''' dds ip address
-'''
+#+TODO: do not use global variable
 dds_ip_addr = ''
 
 
@@ -68,7 +69,27 @@ def execute_command():
 
 @route('/monitor')
 def monitor_page():
-    return template('empty')
+    return template('monitor')
+
+
+#+TODO: do not use global variable
+monitor_client = None
+
+@post('/monitor/current')
+def current_monitor_data():
+    global monitor_client
+
+    if monitor_client is None:
+        monitor_port   = ddd_get_port(dds_ip_addr, 'monitor')
+        monitor_client = DMonitor(dds_ip_addr, monitor_port)
+        monitor_client.send_command('start')
+        thread.start_new_thread(monitor_client.recv_data, ())
+
+    cpu_usage = monitor_client.get_cpu_usage()
+    mem_usage = monitor_client.get_mem_usage()
+    response_json = '{"cpu":%.2f, "mem":%.2f}' % (cpu_usage, mem_usage)
+
+    return response_json
 
 
 @route('/terminal')
@@ -77,7 +98,7 @@ def terminal_page():
 
 
 @route('/log')
-def log_pag():
+def log_page():
     return template('empty')
 
 
