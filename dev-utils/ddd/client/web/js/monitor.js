@@ -1,13 +1,13 @@
 function monitorLoad() {
 	var cpuChart = new SmoothieChart({
 		grid: {	lineWidth: 1,
-				millisPerLine: 1200,
+				millisPerLine: 600,
 				verticalSections: 5 },
 		minValue: 0,
 		maxValue: 100 });
 	var memChart = new SmoothieChart({
 		grid: {	lineWidth: 1,
-				millisPerLine: 1200,
+				millisPerLine: 600,
 				verticalSections: 5 },
 		minValue: 0,
 		maxValue: 100 });
@@ -44,7 +44,22 @@ function monitorLoad() {
 	/* set a timer to get monitor data */
 	setInterval(function() {
 		xhr.onreadystatechange = addInfoToChart;
-		xhr.open("POST", "monitor/current", true);
+		xhr.open("POST", "/monitor/data", true);
 		xhr.send("");
 	}, 1000);
+}
+
+function monitorToggle() {
+	var toggleButton = document.getElementById("toggle-button");
+	var xhr = new XMLHttpRequest();
+
+	if ("connect" === toggleButton.value) {
+		xhr.open("POST", "/monitor/start", true);
+		xhr.send("")
+		toggleButton.value = "stop";
+	} else if ("stop" === toggleButton.value) {
+		xhr.open("POST", "/monitor/stop", true);
+		xhr.send("")
+		toggleButton.value = "connect";
+	}
 }

@@ -7,11 +7,9 @@
   </head>
   <body onload="monitorLoad()">
 	<p>CPU Usage:</p>
-	<canvas id="cpu-usage" width="1200" height="300"></canvas>
 	<br />
 	<br />
 	<p>Memory Usage:</p>
-	<canvas id="mem-usage" width="1200" height="300"></canvas>
 	<br />
 	<br />
 	<a href="./index">[Back]</a>

@@ -1,34 +1,38 @@
 <html>
   <head>
 	<title>DDW</title>
-	<script type="text/javascript" src="js/config.js"></script>
+	<script type="text/javascript" src="js/smoothie.js"></script>
+	<script type="text/javascript" src="js/dds.js"></script>
+	<script type="text/javascript" src="js/monitor.js"></script>
   </head>
-  <body onkeydown="on_enter_down()">
+  <body onload="monitorLoad()">
 	<h1>DDW</h1>
 	<hr/>
-	<a href="./command">command</a> <br/>
-	<a href="./monitor">monitor</a> <br/>
-	<a href="./terminal">terminal</a> <br/>
-	<a href="./log">log</a> <br/>
-	<a href="./setting">settinge</a> <br/>
-	<a href="./about">about</a> <br/>
-	<hr/>
+	<br/>
 	% if ipaddr == '':
+	<p>DDS IP Address: </p>
+	<input id="dds-ip-text" type="text" />
+	<input id="dds-connect" type="button" value="connect" onclick="ddsConnect()" />
+	% else:
+	<p>dds ip address is: {{ipaddr}}</p>
+	<input id="toggle-button" type="button" value="stop" onclick="monitorToggle()" />
+	% end
+	<br/>
+	<br/>
 	<table>
 	  <tr>
+		<td>CPU Usage:</td>
+		<td>MEM Usage:</td>
+	  </tr>
+	  <tr>
 		<td>
-		  <p>DDS IP Address: </p>
+		  <canvas id="cpu-usage" width="600" height="300"></canvas>
 		</td>
 		<td>
-		  <input id="dds-ip-text" type="text" />
-		</td>
-		<td>
-		  <input id="connect-button" type="button" value="set" onclick="dds_config()" />
+		  <canvas id="mem-usage" width="600" height="300"></canvas>
 		</td>
 	  </tr>
 	</table>
-	% else:
-	<p>dds ip address is: {{ipaddr}}</p>
-	% end
+
   </body>
 </html>

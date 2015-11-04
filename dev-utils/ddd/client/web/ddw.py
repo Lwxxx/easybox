@@ -12,12 +12,31 @@ from ddd_monitor import DMonitor
 
 #+TODO: do not use global variable
 dds_ip_addr = ''
+monitor_client = None
 
 
+''' portmap wrapper
+'''
 def ddd_get_port(ipaddr, module):
     portmap_client = DPortmap(ipaddr)
     command_port = portmap_client.get_port(module)
     return command_port
+
+
+''' creata a monitor client
+'''
+def create_monitor_client():
+    global monitor_client
+
+    if '' == dds_ip_addr:
+        return None
+
+    if monitor_client is None:
+        monitor_port   = ddd_get_port(dds_ip_addr, 'monitor')
+        monitor_client = DMonitor(dds_ip_addr, monitor_port)
+        thread.start_new_thread(monitor_client.recv_data, ())
+
+    return monitor_client
 
 
 ''' css files
@@ -42,74 +61,54 @@ def index_page():
     global dds_ip_addr
     return template('index', ipaddr=dds_ip_addr)
 
+
 ''' handle connect post
 '''
-@post('/config')
-def dds_config():
+@post('/dds')
+def dds_connect():
     global dds_ip_addr
     dds_ip_addr = request.body.buf
     return "ok"
 
 
-@route('/command')
-def command_page():
-    return template('command')
-
-
-@post('/command/execute')
-def execute_command():
-    global dds_ip_addr
-    command_text   = request.body.buf
-    command_port   = ddd_get_port(dds_ip_addr, 'command')
-    command_client = DCommand(dds_ip_addr, command_port)
-    command_result = command_client.run_command(command_text)
-
-    return command_result
-
-
-@route('/monitor')
-def monitor_page():
-    return template('monitor')
-
-
-#+TODO: do not use global variable
-monitor_client = None
-
-@post('/monitor/current')
+''' return current monitor data
+'''
+@post('/monitor/data')
 def current_monitor_data():
-    global monitor_client
+    cpu_usage = 0.0
+    mem_usage = 0.0
+    monitor = create_monitor_client()
 
-    if monitor_client is None:
-        monitor_port   = ddd_get_port(dds_ip_addr, 'monitor')
-        monitor_client = DMonitor(dds_ip_addr, monitor_port)
-        monitor_client.send_command('start')
-        thread.start_new_thread(monitor_client.recv_data, ())
+    if monitor is not None:
+        cpu_usage = monitor.get_cpu_usage()
+        mem_usage = monitor.get_mem_usage()
 
-    cpu_usage = monitor_client.get_cpu_usage()
-    mem_usage = monitor_client.get_mem_usage()
     response_json = '{"cpu":%.2f, "mem":%.2f}' % (cpu_usage, mem_usage)
-
     return response_json
 
 
-@route('/terminal')
-def terminal_page():
-    return template('empty')
+''' start monitor
+'''
+@post('/monitor/start')
+def start_monitor():
+    monitor = create_monitor_client()
+
+    if monitor is not None:
+        monitor.send_command('start')
+
+    return "ok"
 
 
-@route('/log')
-def log_page():
-    return template('empty')
+''' stop monitor
+'''
+@post('/monitor/stop')
+def stop_monitor():
+    monitor = create_monitor_client()
 
+    if monitor is not None:
+        monitor.send_command('stop')
 
-@route('/setting')
-def setting_page():
-    return template('empty')
-
-
-@route('/about')
-def about_page():
-    return template('empty')
+    return "ok"
 
 
 if __name__ == '__main__':
