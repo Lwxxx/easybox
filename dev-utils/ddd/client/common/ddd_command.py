@@ -8,10 +8,16 @@ class DCommand(object):
         self.dstip = dstip
         self.dstport = dstport
 
-    def run_command(self, cmd):
+    def run_command(self, cmd, callback):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(cmd, (self.dstip, self.dstport))
-        data, (ip, port) = sock.recvfrom(1024)
-        sock.close()
 
+        while True:
+            data = sock.recv(1024)
+            if 0 == len(data):
+                break
+
+            callback(data)
+
+        sock.close()
         return data

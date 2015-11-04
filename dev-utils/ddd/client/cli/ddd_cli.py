@@ -23,8 +23,13 @@ def ddd_get_port(ipaddr, module):
 def ddd_run_command(ipaddr, command):
     command_port   = ddd_get_port(ipaddr, 'command')
     command_client = DCommand(ipaddr, command_port)
-    command_result  = command_client.run_command(command)
-    print 'command return: \n\n', command_result, '\n'
+
+    def _show_output(data):
+        print data,
+        sys.stdout.flush()
+
+    print 'command return: \n'
+    command_client.run_command(command, _show_output)
 
 
 def ddd_get_file(ipaddr, remote_name, local_path):
