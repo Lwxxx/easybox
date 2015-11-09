@@ -73,9 +73,9 @@ class DMonitor(object):
             self.cpu_usage = float(data.split(':')[-1])
         elif name == 'loadavg':
             loadavg_data = data.split(',')
-            self.cpu_lavg_1min  = float(loadavg_data[0].split(':')[-1]) * 10
-            self.cpu_lavg_5min  = float(loadavg_data[1].split(':')[-1]) * 10
-            self.cpu_lavg_15min = float(loadavg_data[2].split(':')[-1]) * 10
+            self.cpu_lavg_1min  = float(loadavg_data[0].split(':')[-1])
+            self.cpu_lavg_5min  = float(loadavg_data[1].split(':')[-1])
+            self.cpu_lavg_15min = float(loadavg_data[2].split(':')[-1])
 
 
     def _handle_mem_info(self, name, timestamp, data):

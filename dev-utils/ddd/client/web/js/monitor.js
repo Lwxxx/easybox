@@ -10,7 +10,7 @@ function monitorLoad() {
 				millisPerLine: 400,
 				verticalSections: 5 },
 		minValue: 0,
-		maxValue: 20 });
+		maxValue: 10 });
 	var memChart = new SmoothieChart({
 		grid: {	lineWidth: 1,
 				millisPerLine: 400,
