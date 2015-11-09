@@ -53,6 +53,14 @@ void* collect_thread(void* arg)
 			sendto(monitor_sock, send_buf, strlen(send_buf), 0,
 				   (struct sockaddr*)&monitor_addr, addr_len);
 
+			/* cpu load average */
+			memset(send_buf, 0, BUF_MAX);
+			sprintf(send_buf, "cpu$loadavg$%llu$1min:%.2f,5min:%.2f,15min:%.2f\n",
+					now, cpu_data->load.avg_1min, cpu_data->load.avg_5min,
+					cpu_data->load.avg_15min);
+			sendto(monitor_sock, send_buf, strlen(send_buf), 0,
+				   (struct sockaddr*)&monitor_addr, addr_len);
+
 			/* memory info */
 			collect_memory_info();
 			memset(send_buf, 0, BUF_MAX);

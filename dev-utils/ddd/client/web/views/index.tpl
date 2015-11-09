@@ -19,20 +19,23 @@
 	% end
 	<br/>
 	<br/>
-	<table>
+	<table cellspacing="20">
 	  <tr>
 		<td>CPU Usage:</td>
+		<td>CPU Load Average:</td>
 		<td>MEM Usage:</td>
 	  </tr>
 	  <tr>
 		<td>
-		  <canvas id="cpu-usage" width="600" height="300"></canvas>
+		  <canvas id="cpu-usage" width="400" height="200"></canvas>
 		</td>
 		<td>
-		  <canvas id="mem-usage" width="600" height="300"></canvas>
+		  <canvas id="cpu-lavg" width="400" height="200"></canvas>
+		</td>
+		<td>
+		  <canvas id="mem-usage" width="400" height="200"></canvas>
 		</td>
 	  </tr>
 	</table>
-
   </body>
 </html>

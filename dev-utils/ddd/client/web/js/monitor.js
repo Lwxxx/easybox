@@ -1,23 +1,50 @@
 function monitorLoad() {
 	var cpuChart = new SmoothieChart({
 		grid: {	lineWidth: 1,
-				millisPerLine: 600,
+				millisPerLine: 400,
 				verticalSections: 5 },
 		minValue: 0,
 		maxValue: 100 });
+	var lavgChart = new SmoothieChart({
+		grid: {	lineWidth: 1,
+				millisPerLine: 400,
+				verticalSections: 5 },
+		minValue: 0,
+		maxValue: 20 });
 	var memChart = new SmoothieChart({
 		grid: {	lineWidth: 1,
-				millisPerLine: 600,
+				millisPerLine: 400,
 				verticalSections: 5 },
 		minValue: 0,
 		maxValue: 100 });
-	var cpuInfo  = new TimeSeries();
-	var memInfo  = new TimeSeries();
-	var xhr      = new XMLHttpRequest();
+	var cpuInfo   = new TimeSeries();
+	var lavg1min  = new TimeSeries();
+	var lavg5min  = new TimeSeries();
+	var lavg15min = new TimeSeries();
+	var memInfo   = new TimeSeries();
+	var xhr       = new XMLHttpRequest();
 
 	/* cpu usage chart */
 	cpuChart.streamTo(document.getElementById("cpu-usage"), 1000);
 	cpuChart.addTimeSeries(cpuInfo, {
+		strokeStyle: 'rgba(255, 0, 0, 1)',
+		fillStyle: 'rgba(255, 0, 0, 0.2)',
+		lineWidth: 4
+	});
+
+	/* cpu load average chart */
+	lavgChart.streamTo(document.getElementById("cpu-lavg"), 1000);
+	lavgChart.addTimeSeries(lavg1min, {
+		strokeStyle: 'rgba(0, 0, 255, 1)',
+		fillStyle: 'rgba(0, 0, 255, 0.2)',
+		lineWidth: 4
+	});
+	lavgChart.addTimeSeries(lavg5min, {
+		strokeStyle: 'rgba(255, 255, 0, 1)',
+		fillStyle: 'rgba(255, 255, 0, 0.2)',
+		lineWidth: 4
+	});
+	lavgChart.addTimeSeries(lavg15min, {
 		strokeStyle: 'rgba(255, 0, 0, 1)',
 		fillStyle: 'rgba(255, 0, 0, 0.2)',
 		lineWidth: 4
@@ -38,6 +65,9 @@ function monitorLoad() {
 
 			cpuInfo.append(currTime, responseJson.cpu);
 			memInfo.append(currTime, responseJson.mem);
+			lavg1min.append(currTime, responseJson.lavg_1min);
+			lavg5min.append(currTime, responseJson.lavg_5min);
+			lavg15min.append(currTime, responseJson.lavg_15min);
 		}
 	};
 

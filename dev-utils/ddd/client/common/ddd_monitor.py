@@ -6,10 +6,13 @@ import time
 
 class DMonitor(object):
 
-    cpu_usage = 0.0
-    mem_usage = 0.0
-    mem_total = 0
-    mem_used  = 0
+    cpu_usage      = 0.0
+    cpu_lavg_1min  = 0.0
+    cpu_lavg_5min  = 0.0
+    cpu_lavg_15min = 0.0
+    mem_usage      = 0.0
+    mem_total      = 0
+    mem_used       = 0
 
     def __init__(self, dst_ip, dst_port):
         self.dst_ip = dst_ip
@@ -19,6 +22,10 @@ class DMonitor(object):
         
     def get_cpu_usage(self):
         return self.cpu_usage
+
+
+    def get_cpu_lavg(self):
+        return self.cpu_lavg_1min, self.cpu_lavg_5min, self.cpu_lavg_15min
 
 
     def get_mem_usage(self):
@@ -62,7 +69,13 @@ class DMonitor(object):
 
 
     def _handle_cpu_info(self, name, timestamp, data):
-        self.cpu_usage = float(data.split(':')[-1])
+        if name == 'total':
+            self.cpu_usage = float(data.split(':')[-1])
+        elif name == 'loadavg':
+            loadavg_data = data.split(',')
+            self.cpu_lavg_1min  = float(loadavg_data[0].split(':')[-1]) * 10
+            self.cpu_lavg_5min  = float(loadavg_data[1].split(':')[-1]) * 10
+            self.cpu_lavg_15min = float(loadavg_data[2].split(':')[-1]) * 10
 
 
     def _handle_mem_info(self, name, timestamp, data):

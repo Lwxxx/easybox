@@ -47,7 +47,12 @@ int collect_cpu_info(void)
 	uint64_t guest_nice_period = 0;
 	uint64_t total_period = 0;
 	uint64_t busy_period = 0;
+	int active_procs = 0;
+	int total_procs = 0;
+	int last_procs = 0;
 
+
+	/* parse cpu time data */
 	proc_fd = fopen(PROC_STAT, "r");
 	if (NULL == proc_fd)
 	{
@@ -104,6 +109,28 @@ int collect_cpu_info(void)
 				   iowait_period + irq_period + softirq_period + steel_period;
 	busy_period = total_period - idle_period - iowait_period;
 	cpu_data.total_info.usage = ((double)busy_period/(double)total_period) * 100;
+
+	/* parse cpu load averge data */
+	proc_fd = fopen(PROC_CPU_LAVG, "r");
+	if (NULL == proc_fd)
+	{
+		fprintf(stderr, "open %s failed!\n", PROC_STAT);
+		return -1;
+	}
+
+	/* 0.00 0.01 0.05 1/77 4866
+	 * (1)	1min load average
+	 * (2)	5min load average
+	 * (3)	15min load average
+	 * (4)	...
+	 * (5)	...
+	 */
+	fscanf(proc_fd, "%32lf %32lf %32lf %32d*/%32d* %32d*",
+		   &(cpu_data.load.avg_1min),
+		   &(cpu_data.load.avg_5min),
+		   &(cpu_data.load.avg_15min),
+		   &active_procs, &total_procs, &last_procs);
+	fclose(proc_fd);
 
 	return 0;
 }

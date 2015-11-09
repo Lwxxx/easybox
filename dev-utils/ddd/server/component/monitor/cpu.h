@@ -15,12 +15,21 @@ struct cpu_info
 	double usage;
 };
 
+// cpu load averge
+struct cpu_load_averge
+{
+	double avg_1min;
+	double avg_5min;
+	double avg_15min;
+};
+
 // cpu info collection
 struct cpu_info_collection
 {
 	int cpu_count;
 	struct cpu_info total_info;
 	struct cpu_info cpu_list[CPU_MAX];
+	struct cpu_load_averge load;
 };
 
 #ifdef __cplusplus

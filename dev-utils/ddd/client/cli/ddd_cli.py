@@ -44,11 +44,11 @@ def ddd_put_file(ipaddr, local_name, remote_path):
     tftp_client.put(local_name, remote_path)
 
 
-def ddd_run_monitor(ipaddr, flag):
+def ddd_run_monitor(ipaddr):
     monitor_port = ddd_get_port(ipaddr, 'monitor')
     monitor_client = DMonitor(ipaddr, monitor_port)
 
-    def _show_monitor_data(flag):
+    def _show_monitor_data():
         MIN_WIDTH_REQUIRED = 40
 
         print ''
@@ -62,8 +62,12 @@ def ddd_run_monitor(ipaddr, flag):
             # get current monitor data
             cpu_usage = monitor_client.get_cpu_usage()
             mem_usage = monitor_client.get_mem_usage()
+            lavg_1min, lavg_5min, lavg_15min = monitor_client.get_cpu_lavg()
 
             # show current data
+            cpu_lavg_str = 'CPU Load Average: %.2f  %.2f  %.2f\n' % \
+                           (lavg_1min, lavg_5min, lavg_15min)
+
             cpu_pb_width = (term_width / 2) - 16                  # progress bar
             cpu_vl_width = int((cpu_usage/100.0) * cpu_pb_width)  # vertical line
             cpu_sp_width = cpu_pb_width - cpu_vl_width            # space
@@ -76,20 +80,13 @@ def ddd_run_monitor(ipaddr, flag):
             mem_usage_str = 'MEM [%s%s] %6.2f%%' % ('|' * mem_vl_width,
                             ' ' * mem_sp_width, mem_usage)
 
-            monitor_line =  cpu_usage_str + '   ' + mem_usage_str
-            print monitor_line,
-            if '--oneline' == flag:
-                sys.stdout.flush()
-            else:
-                print ''
-
+            monitor_line =  cpu_lavg_str + cpu_usage_str + '   ' + mem_usage_str
+            print monitor_line
             time.sleep(1)
-            if '--oneline' == flag:
-                print '\r',
 
 
     # start a new thread to show data
-    thread.start_new_thread(_show_monitor_data, (flag,))
+    thread.start_new_thread(_show_monitor_data, ())
 
     monitor_client.send_command('start')
     monitor_client.recv_data()
@@ -128,11 +125,7 @@ if __name__ == '__main__':
             show_usage()
         ddd_get_file(ipaddr, sys.argv[3], sys.argv[4])
     elif action == 'monitor':
-        if (4 <= len(sys.argv)):
-            monitor_flag = sys.argv[3]
-        else:
-            monitor_flag = ''
-        ddd_run_monitor(ipaddr, monitor_flag)
+        ddd_run_monitor(ipaddr)
     else:
         print 'Invalid action: %s' % (action)
         show_usage()

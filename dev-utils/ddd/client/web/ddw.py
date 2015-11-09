@@ -75,15 +75,21 @@ def dds_connect():
 '''
 @post('/monitor/data')
 def current_monitor_data():
-    cpu_usage = 0.0
-    mem_usage = 0.0
-    monitor = create_monitor_client()
+    cpu_usage  = 0.0
+    lavg_1min  = 0.0
+    lavg_5min  = 0.0
+    lavg_15min = 0.0
+    mem_usage  = 0.0
+    monitor    = create_monitor_client()
 
     if monitor is not None:
         cpu_usage = monitor.get_cpu_usage()
         mem_usage = monitor.get_mem_usage()
+        lavg_1min, lavg_5min, lavg_15min = monitor.get_cpu_lavg()
 
-    response_json = '{"cpu":%.2f, "mem":%.2f}' % (cpu_usage, mem_usage)
+    response_json = '{"cpu":%.2f, "lavg_1min":%.2f, "lavg_5min":%.2f, "lavg_15min":%.2f, "mem":%.2f}' \
+                    % (cpu_usage, lavg_1min, lavg_5min, lavg_15min, mem_usage)
+
     return response_json
 
 
