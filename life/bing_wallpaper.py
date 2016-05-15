@@ -7,13 +7,13 @@ from optparse import OptionParser
 
 
 BING_URL   = r'http://bing.com'
-RE_BG_URL  = r'g_img=\{url\:\'(.+?\.jpg)\''
+RE_BG_URL  = r'g_img=\{url\:\s?["\'](.+?\.jpg)["\']'
 
 
 ''' get url of bing main page background image
 '''
 def parse_bing_bg_url():
-    # Request bing main page
+    image_url = None
     req = urllib2.Request(BING_URL)
     req.add_header('User-agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:39.0) Gecko/20100101 Firefox/39.0')
     try:
@@ -26,10 +26,10 @@ def parse_bing_bg_url():
     bg_url_pattern = re.compile(RE_BG_URL)
     match = re.search(bg_url_pattern, str(page_html))
     if match is not None:
-        return match.group(1)
-    else:
-        return None
+        image_url = match.group(1)
+        image_url = image_url.replace(r'\/', '/')
 
+    return image_url
 
 ''' http download
 '''
